@@ -29,7 +29,7 @@ public class AnnouncementController {
     }
 
     @GetMapping("/{id}")
-    public AnnouncementResponse getAnnouncementById(@PathVariable int id) {
+    public AnnouncementResponse getAnnouncementById(@PathVariable("id") int id) {
         return announcementService.getAnnouncementById(id);
     }
 
@@ -42,14 +42,14 @@ public class AnnouncementController {
 
     @PutMapping("/{id}")
     public AnnouncementResponse updateAnnouncement(
-            @PathVariable int id,
+            @PathVariable("id") int id,
             @RequestBody AnnouncementRequest announcementRequest) {
 
         return announcementService.updateAnnouncement(id, announcementRequest);
     }
-
+    
     @DeleteMapping("/{id}")
-    public String deleteAnnouncement(@PathVariable int id) {
+    public String deleteAnnouncement(@PathVariable("id") int id) {
         announcementService.deleteAnnouncement(id);
         return "Announcement deleted successfully.";
     }

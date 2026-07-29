@@ -23,29 +23,36 @@ public class ImageController {
     @Autowired
     private ImageService imageService;
 
+    // GET ALL IMAGES
     @GetMapping
     public List<ImageResponse> getAllImages() {
         return imageService.getAllImages();
     }
 
+    // GET IMAGE BY ID
     @GetMapping("/{id}")
-    public ImageResponse getImageById(@PathVariable int id) {
+    public ImageResponse getImageById(@PathVariable("id") int id) {
         return imageService.getImageById(id);
     }
 
+    // SAVE IMAGE
     @PostMapping
     public ImageResponse saveImage(@RequestBody ImageRequest imageRequest) {
         return imageService.saveImage(imageRequest);
     }
 
+    // UPDATE IMAGE
     @PutMapping("/{id}")
-    public ImageResponse updateImage(@PathVariable int id,
-                                     @RequestBody ImageRequest imageRequest) {
+    public ImageResponse updateImage(
+            @PathVariable("id") int id,
+            @RequestBody ImageRequest imageRequest) {
+
         return imageService.updateImage(id, imageRequest);
     }
 
+    // DELETE IMAGE
     @DeleteMapping("/{id}")
-    public String deleteImage(@PathVariable int id) {
+    public String deleteImage(@PathVariable("id") int id) {
         imageService.deleteImage(id);
         return "Image deleted successfully.";
     }

@@ -28,8 +28,10 @@ public class AlbumController {
         return albumService.getAllAlbums();
     }
 
+  
+    
     @GetMapping("/{id}")
-    public AlbumDTO getAlbumById(@PathVariable int id) {
+    public AlbumDTO getAlbumById(@PathVariable("id") int id) {
         return albumService.getAlbumById(id);
     }
 
@@ -39,13 +41,13 @@ public class AlbumController {
     }
 
     @PutMapping("/{id}")
-    public AlbumDTO updateAlbum(@PathVariable int id,
-                                     @RequestBody AlbumDTO albumRequest) {
+    public AlbumDTO updateAlbum(@PathVariable("id") int id,
+                                @RequestBody AlbumDTO albumRequest) {
         return albumService.updateAlbum(id, albumRequest);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteAlbum(@PathVariable int id) {
+    public String deleteAlbum(@PathVariable("id") int id) {
         albumService.deleteAlbum(id);
         return "Album deleted successfully.";
     }
