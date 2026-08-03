@@ -3,19 +3,6 @@ import { submitContact } from '../../api/content';
 
 const MAP_QUERY = encodeURIComponent('Vidyanidhi Education Complex, JVPD Scheme, Juhu, Mumbai 400049');
 
-function ContactIcon({ kind }) {
-  const paths = {
-    pin: <><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12Z" /><circle cx="12" cy="9" r="2.5" /></>,
-    phone: <path d="M6.6 10.8c1.4 2.7 3.9 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C11.4 21 3 12.6 3 3c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1L6.6 10.8Z" />,
-    mail: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3.5 6.5 8.5 6 8.5-6" /></>,
-  };
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--teal-700, #0d9488)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
-      {paths[kind]}
-    </svg>
-  );
-}
-
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [errors, setErrors] = useState({});
@@ -60,20 +47,26 @@ export default function Contact() {
       </div>
 
       <div className="contact-top">
-        <div className="card card-pad contact-method">
-          <div className="circle" aria-hidden="true" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ContactIcon kind="pin" /></div>
-          <b>Visit us</b>
-          <span>5th Floor, Vidyanidhi Education Complex, JVPD Scheme, Juhu, Mumbai 400049</span>
+        <div className="card card-pad contact-method" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+          <div className="circle" aria-hidden="true" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          </div>
+          <b style={{ marginTop: 12 }}>Visit us</b>
+          <span style={{ marginTop: 4 }}>5th Floor, Vidyanidhi Education Complex, JVPD Scheme, Juhu, Mumbai 400049</span>
         </div>
-        <div className="card card-pad contact-method">
-          <div className="circle" aria-hidden="true" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ContactIcon kind="phone" /></div>
-          <b>Call us</b>
-          <span>022-2625 5629 / 2670 5498</span>
+        <div className="card card-pad contact-method" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+          <div className="circle" aria-hidden="true" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          </div>
+          <b style={{ marginTop: 12 }}>Call us</b>
+          <span style={{ marginTop: 4 }}>022-2625 5629 / 2670 5498</span>
         </div>
-        <div className="card card-pad contact-method">
-          <div className="circle" aria-hidden="true" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ContactIcon kind="mail" /></div>
-          <b>Email us</b>
-          <span>training.vita@gmail.com</span>
+        <div className="card card-pad contact-method" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+          <div className="circle" aria-hidden="true" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          </div>
+          <b style={{ marginTop: 12 }}>Email us</b>
+          <span style={{ marginTop: 4 }}>training.vita@gmail.com</span>
         </div>
       </div>
 
