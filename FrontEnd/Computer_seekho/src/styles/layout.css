@@ -391,7 +391,7 @@
   }
 }
 
-/* ============ Signature: Arch ============= */
+/* ============ Signature: Arch ============== */
 .arch-frame {
   position: relative;
   clip-path: url(#archClip);
