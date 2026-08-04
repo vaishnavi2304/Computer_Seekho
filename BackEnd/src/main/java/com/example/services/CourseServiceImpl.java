@@ -7,25 +7,56 @@ import com.example.entities.Course;
 import com.example.repositories.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class CourseServiceImpl implements CourseService {
+	
+	private static final Logger log =
+	        LoggerFactory.getLogger(CourseServiceImpl.class);
 
     @Autowired
     private CourseRepository courseRepository;
 
     @Override
     public CourseResponse createCourse(CourseRequest request) {
-        if (courseRepository.existsByCourseNameIgnoreCase(request.getCourseName())) {
+
+        log.info(
+                "Creating course with name={}",
+                request.getCourseName()
+        );
+
+        if (courseRepository.existsByCourseNameIgnoreCase(
+                request.getCourseName())) {
+
+            log.warn(
+                    "Duplicate course creation attempted. courseName={}",
+                    request.getCourseName()
+            );
+
             throw new RuntimeException(
-                    "A course named \"" + request.getCourseName() + "\" already exists. " +
-                    "Use the existing course instead of creating a duplicate.");
+                    "A course named \"" +
+                    request.getCourseName() +
+                    "\" already exists. " +
+                    "Use the existing course instead of creating a duplicate."
+            );
         }
+
         Course course = mapToEntity(request);
-        Course savedCourse = courseRepository.save(course);
+
+        Course savedCourse =
+                courseRepository.save(course);
+
+        log.info(
+                "Course created successfully. courseId={} courseName={}",
+                savedCourse.getCourseId(),
+                savedCourse.getCourseName()
+        );
+
         return mapToResponse(savedCourse);
     }
 

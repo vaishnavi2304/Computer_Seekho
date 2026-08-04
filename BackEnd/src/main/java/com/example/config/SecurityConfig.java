@@ -44,13 +44,34 @@ public class SecurityConfig {
             // Authorization Rules
             .authorizeHttpRequests(auth -> auth
 
-                    // Public APIs
+                    /*
+                     * Public login endpoint
+                     */
                     .requestMatchers(
                             "/api/auth/login",
                             "/api/auth/google"
                     ).permitAll()
 
-                    // Every other API requires authentication
+                    /*
+                     * Anyone can check basic application
+                     * health and information.
+                     */
+                    .requestMatchers(
+                            "/actuator/health",
+                            "/actuator/health/**",
+                            "/actuator/info"
+                    ).permitAll()
+
+                    /*
+                     * Other actuator endpoints require JWT.
+                     */
+                    .requestMatchers(
+                            "/actuator/**"
+                    ).authenticated()
+
+                    /*
+                     * All remaining endpoints require JWT.
+                     */
                     .anyRequest()
                     .authenticated()
             )

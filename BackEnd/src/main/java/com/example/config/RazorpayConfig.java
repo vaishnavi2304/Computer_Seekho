@@ -30,10 +30,7 @@ public class RazorpayConfig {
     @Bean
     public RazorpayClient razorpayClient() throws RazorpayException {
         // Safe to log: key_id is public. NEVER log keySecret.
-        log.info("Razorpay client initializing with key.id = '{}' (length {}), key.secret length = {}",
-                mask(keyId), keyId == null ? 0 : keyId.length(),
-                keySecret == null ? 0 : keySecret.length());
-
+    	log.info("Razorpay client initialized successfully");
         if (keyId == null || keyId.isBlank()) {
             log.error("razorpay.key.id is missing! Set RAZORPAY_KEY_ID in application.properties or the environment.");
         }

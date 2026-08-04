@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { ArchMotif } from '../../components/ui/ui';
+import GoogleSignInButton from '../../components/GoogleSignInButton';
 
 export default function Login() {
-  const { signIn } = useAuth();
+  const { signIn, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [username, setUsername] = useState('');
@@ -13,18 +14,32 @@ export default function Login() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  function goToDestination() {
+    const from = location.state?.from && location.state.from !== '/admin/login' ? location.state.from : '/admin/dashboard';
+    navigate(from, { replace: true });
+  }
+
   async function onSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
     setError('');
     try {
       await signIn(username, password);
-      const from = location.state?.from && location.state.from !== '/admin/login' ? location.state.from : '/admin/dashboard';
-      navigate(from, { replace: true });
+      goToDestination();
     } catch (err) {
       setError(err.message || 'Sign in failed. Check your username and password.');
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function onGoogleSuccess(idToken) {
+    setError('');
+    try {
+      await signInWithGoogle(idToken);
+      goToDestination();
+    } catch (err) {
+      setError(err.message || 'Google sign-in failed.');
     }
   }
 
@@ -67,6 +82,17 @@ export default function Login() {
           <button className="btn btn-primary btn-block" type="submit" disabled={submitting}>
             {submitting ? <span className="spinner" /> : 'Sign in'}
           </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '18px 0' }}>
+            <div style={{ flex: 1, height: 1, background: '#e2e2e2' }} />
+            <span className="muted" style={{ fontSize: 12 }}>OR</span>
+            <div style={{ flex: 1, height: 1, background: '#e2e2e2' }} />
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <GoogleSignInButton onSuccess={onGoogleSuccess} onError={(err) => setError(err.message)} />
+          </div>
+
           <p className="login-foot">Restricted to authorized staff members only.</p>
         </form>
       </div>
