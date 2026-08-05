@@ -1,5 +1,8 @@
 package com.example.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ExcelImportResponse {
 
     private boolean success;
@@ -11,6 +14,8 @@ public class ExcelImportResponse {
     private int importedRecords;
 
     private int failedRecords;
+
+    private List<String> errors = new ArrayList<>();
 
     public ExcelImportResponse() {
     }
@@ -53,5 +58,13 @@ public class ExcelImportResponse {
 
     public void setFailedRecords(int failedRecords) {
         this.failedRecords = failedRecords;
+    }
+
+    public List<String> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(List<String> errors) {
+        this.errors = errors;
     }
 }

@@ -11,4 +11,8 @@ public interface ExcelUploadService {
 
     ExcelImportResponse uploadExcel(MultipartFile file);
 
+    ExcelValidationResponse validateRecruiterExcel(MultipartFile file);
+
+    ExcelImportResponse uploadRecruiterExcel(MultipartFile file);
+
 }

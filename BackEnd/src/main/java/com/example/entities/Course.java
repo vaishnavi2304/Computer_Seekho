@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-//
+
 @Entity
 @Table(name = "course")
 public class Course {
@@ -46,7 +46,14 @@ public class Course {
     @Column(name = "course_is_active")
     private Boolean courseIsActive = true;
 
-    @Column(name = "cover_photo")
+    /*
+     * cover_photo
+     * Was VARCHAR(255) (JPA default when no length given) - widened to
+     * LONGTEXT so this can hold either a short hosted image URL (unchanged,
+     * existing behaviour) OR a base64 data: URL from the admin
+     * "Browse..." file picker.
+     */
+    @Column(name = "cover_photo", columnDefinition = "LONGTEXT")
     private String coverPhoto;
 
     @Column(name = "is_featured")

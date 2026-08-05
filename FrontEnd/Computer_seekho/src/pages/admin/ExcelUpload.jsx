@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
-import { validateExcel, uploadExcel } from '../../api/misc';
+import { validateExcel, uploadExcel, validateRecruiterExcel, uploadRecruiterExcel } from '../../api/misc';
 
-const OTHER_TABLES = ['Courses', 'Batches', 'Staff', 'Recruiters'];
+const OTHER_TABLES = ['Courses', 'Batches', 'Staff'];
 
 // Loaded on demand (not at the top of the bundle) — this library is ~700KB
 // and is only ever needed on this one admin page, never on the public site.
@@ -11,7 +11,39 @@ function loadXLSX() {
   return xlsxPromise;
 }
 
+const TABLES = {
+  placements: {
+    label: 'Placements',
+    blurb: 'Student, package, recruiter and batch — bulk-linked in one go.',
+    columns: ['Student Name', 'Package', 'Recruiter ID', 'Batch ID'],
+    templateRow: ['Asha Patil', 650000, 1, 1],
+    templateName: 'computer-seekho-placements-template.xlsx',
+    previewHeaders: ['Student', 'Package', 'Recruiter', 'Batch'],
+    toPreviewRow: (r) => ({
+      cols: [r[0] ?? '', r[1] ?? '', r[2] ?? '', r[3] ?? ''],
+      valid: Boolean(r[0]) && Boolean(r[2]) && Boolean(r[3]),
+    }),
+    validate: validateExcel,
+    upload: uploadExcel,
+  },
+  recruiters: {
+    label: 'Recruiters',
+    blurb: 'Company name, description and logo URL — new placement partners in one go.',
+    columns: ['Recruiter Name', 'Description', 'Photo URL'],
+    templateRow: ['Tata Consultancy Services', 'Global IT services and consulting.', ''],
+    templateName: 'computer-seekho-recruiters-template.xlsx',
+    previewHeaders: ['Recruiter', 'Description', 'Photo URL'],
+    toPreviewRow: (r) => ({
+      cols: [r[0] ?? '', r[1] ?? '', r[2] ?? ''],
+      valid: Boolean(r[0]),
+    }),
+    validate: validateRecruiterExcel,
+    upload: uploadRecruiterExcel,
+  },
+};
+
 export default function ExcelUpload() {
+  const [table, setTable] = useState('placements');
   const [step, setStep] = useState(1);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -22,15 +54,19 @@ export default function ExcelUpload() {
   const [busy, setBusy] = useState(false);
   const inputRef = useRef(null);
 
+  const spec = TABLES[table];
+
   async function downloadTemplate() {
     const XLSX = await loadXLSX();
     const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet([
-      ['Student Name', 'Package', 'Recruiter', 'Batch'],
-      ['Asha Patil', 650000, 'Tech Mahindra', 'PG-DAC Jan 2026'],
-    ]);
-    XLSX.utils.book_append_sheet(wb, ws, 'Placements');
-    XLSX.writeFile(wb, 'computer-seekho-placements-template.xlsx');
+    const ws = XLSX.utils.aoa_to_sheet([spec.columns, spec.templateRow]);
+    XLSX.utils.book_append_sheet(wb, ws, spec.label);
+    XLSX.writeFile(wb, spec.templateName);
+  }
+
+  function chooseTable(key) {
+    setTable(key);
+    setStep(2);
   }
 
   function handleFile(f) {
@@ -50,15 +86,7 @@ export default function ExcelUpload() {
         const wb = XLSX.read(e.target.result, { type: 'array' });
         const sheet = wb.Sheets[wb.SheetNames[0]];
         const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 }).slice(1);
-        setPreview(
-          rows.map((r) => ({
-            student: r[0] ?? '',
-            package: r[1] ?? '',
-            recruiter: r[2] ?? '',
-            batch: r[3] ?? '',
-            valid: Boolean(r[0]) && Boolean(r[2]) && Boolean(r[3]),
-          }))
-        );
+        setPreview(rows.map((r) => spec.toPreviewRow(r)));
       } catch {
         setError('Could not read that file — make sure it is a valid .xlsx workbook.');
       }
@@ -66,14 +94,14 @@ export default function ExcelUpload() {
     reader.readAsArrayBuffer(f);
     setStep(3);
 
-    validateExcel(f).then(setServerValidation).catch((err) => setError(err.message));
+    spec.validate(f).then(setServerValidation).catch((err) => setError(err.message));
   }
 
   async function onImport() {
     setBusy(true);
     setError('');
     try {
-      const res = await uploadExcel(file);
+      const res = await spec.upload(file);
       setImportResult(res);
     } catch (err) {
       setError(err.message);
@@ -91,7 +119,7 @@ export default function ExcelUpload() {
       <div className="admin-title-row">
         <div>
           <h1>Excel Data Upload</h1>
-          <p className="muted">Bulk-import batch placement records from a spreadsheet.</p>
+          <p className="muted">Bulk-import placement or recruiter records from a spreadsheet.</p>
         </div>
       </div>
 
@@ -109,9 +137,13 @@ export default function ExcelUpload() {
         <div className="card card-pad">
           <h3>What are you importing?</h3>
           <div className="table-choice-grid">
-            <button className="table-choice active" onClick={() => setStep(2)}>
+            <button className={`table-choice ${table === 'placements' ? 'active' : ''}`} onClick={() => chooseTable('placements')}>
               <b>Placements</b>
-              <span>Student, package, recruiter and batch — bulk-linked in one go.</span>
+              <span>{TABLES.placements.blurb}</span>
+            </button>
+            <button className={`table-choice ${table === 'recruiters' ? 'active' : ''}`} onClick={() => chooseTable('recruiters')}>
+              <b>Recruiters</b>
+              <span>{TABLES.recruiters.blurb}</span>
             </button>
             {OTHER_TABLES.map((t) => (
               <div className="table-choice disabled" key={t} title="Not wired to a bulk-import endpoint yet">
@@ -121,14 +153,14 @@ export default function ExcelUpload() {
             ))}
           </div>
           <div className="form-actions">
-            <button className="btn btn-outline" onClick={downloadTemplate}>Download Placements Template</button>
+            <button className="btn btn-outline" onClick={downloadTemplate}>Download {spec.label} Template</button>
           </div>
         </div>
       )}
 
       {step === 2 && (
         <div className="card card-pad">
-          <h3>Upload spreadsheet</h3>
+          <h3>Upload {spec.label.toLowerCase()} spreadsheet</h3>
           <div
             className={`dropzone ${dragOver ? 'drag' : ''}`}
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -149,7 +181,7 @@ export default function ExcelUpload() {
 
       {step === 3 && file && (
         <div className="card card-pad">
-          <h3>Validate &amp; import — {file.name}</h3>
+          <h3>Validate &amp; import {spec.label} — {file.name}</h3>
 
           {serverValidation && (
             <div className="stat-row" style={{ marginTop: 16, marginBottom: 16 }}>
@@ -168,11 +200,16 @@ export default function ExcelUpload() {
           {preview && (
             <div className="table-wrap" style={{ marginBottom: 16 }}>
               <table className="data-table">
-                <thead><tr><th>Student</th><th>Package</th><th>Recruiter</th><th>Batch</th><th>Row status</th></tr></thead>
+                <thead>
+                  <tr>
+                    {spec.previewHeaders.map((h) => <th key={h}>{h}</th>)}
+                    <th>Row status</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {preview.slice(0, 12).map((r, i) => (
                     <tr key={i}>
-                      <td>{r.student}</td><td>{r.package}</td><td>{r.recruiter}</td><td>{r.batch}</td>
+                      {r.cols.map((c, j) => <td key={j}>{c}</td>)}
                       <td>{r.valid ? <span className="badge badge-ok">Valid</span> : <span className="badge badge-danger">Missing data</span>}</td>
                     </tr>
                   ))}
@@ -185,6 +222,12 @@ export default function ExcelUpload() {
             <div className={`alert ${importResult.success ? 'alert-ok' : 'alert-danger'}`}>
               <b>{importResult.message || (importResult.success ? 'Import complete.' : 'Import failed.')}</b>
               <p style={{ marginTop: 6 }}>{importResult.importedRecords} imported, {importResult.failedRecords} failed, of {importResult.totalRecords} total.</p>
+              {importResult.errors?.length > 0 && (
+                <div style={{ marginTop: 10 }}>
+                  {importResult.errors.slice(0, 5).map((e, i) => <div key={i}>{e}</div>)}
+                  {importResult.errors.length > 5 && <div>…and {importResult.errors.length - 5} more.</div>}
+                </div>
+              )}
             </div>
           ) : (
             <div className="form-actions">

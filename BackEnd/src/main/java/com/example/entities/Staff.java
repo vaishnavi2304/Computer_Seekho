@@ -16,7 +16,13 @@ public class Staff {
     @Column(name = "staff_name", length = 100)
     private String staffName;
 
-    @Column(name = "photo_url", length = 255)
+    /*
+     * photo_url
+     * Was VARCHAR(255) - widened to LONGTEXT so this can hold either a
+     * short hosted image URL (unchanged, existing behaviour) OR a
+     * base64 data: URL from the admin "Browse..." file picker.
+     */
+    @Column(name = "photo_url", columnDefinition = "LONGTEXT")
     private String photoUrl;
 
     @Column(name = "staff_mobile")

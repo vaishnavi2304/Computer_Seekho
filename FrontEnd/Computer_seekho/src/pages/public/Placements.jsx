@@ -52,7 +52,11 @@ export default function Placements() {
   const packages = enriched.map((p) => Number(p.placementPackage)).filter((n) => !Number.isNaN(n));
   const highest = packages.length ? Math.max(...packages) : null;
   const average = packages.length ? packages.reduce((a, b) => a + b, 0) / packages.length : null;
-  const placementRate = studentCount ? Math.round((enriched.length / studentCount) * 100) : null;
+  // placed_student has no foreign key back to student, so this is an
+  // approximation (placement record count vs. total admitted students),
+  // not a guaranteed 1:1 ratio - clamp to 100% since a rate can never
+  // logically exceed that, regardless of how the two counts compare.
+  const placementRate = studentCount ? Math.min(100, Math.round((enriched.length / studentCount) * 100)) : null;
 
   const buckets = useMemo(() => {
     const ranges = [

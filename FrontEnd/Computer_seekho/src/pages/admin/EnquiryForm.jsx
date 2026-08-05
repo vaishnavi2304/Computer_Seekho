@@ -262,7 +262,7 @@ export default function EnquiryForm() {
                 <div className="field"><label>Follow-up message</label><textarea className="textarea" rows={3} value={followMsg} onChange={(e) => setFollowMsg(e.target.value)} /></div>
                 <div>
                   <div className="field" style={{ marginBottom: 12 }}><label>Next follow-up date</label><input type="date" className="input" value={nextDate} onChange={(e) => setNextDate(e.target.value)} /></div>
-                  <p className="hint">Defaults to current date + 2 days, per the follow-up policy.</p>
+                  <p className="hint">Defaults to current date + 3 days — adjust the date above if needed.</p>
                 </div>
               </div>
               <div className="form-actions">
@@ -330,6 +330,6 @@ export default function EnquiryForm() {
 
 function defaultNextDate() {
   const d = new Date();
-  d.setDate(d.getDate() + 2);
+  d.setDate(d.getDate() + 3);
   return d.toISOString().slice(0, 10);
 }

@@ -15,10 +15,20 @@ export const getDashboardSummary = () => client.get('/api/dashboard/summary').th
 export const validateExcel = (file) => {
   const form = new FormData();
   form.append('file', file);
-  return client.post('/api/excel/validate', form, { headers: { 'Content-Type': 'multipart/form-data' } }).then((r) => r.data);
+  return client.post('/api/excel/validate', form).then((r) => r.data);
 };
 export const uploadExcel = (file) => {
   const form = new FormData();
   form.append('file', file);
-  return client.post('/api/excel/upload', form, { headers: { 'Content-Type': 'multipart/form-data' } }).then((r) => r.data);
+  return client.post('/api/excel/upload', form).then((r) => r.data);
+};
+export const validateRecruiterExcel = (file) => {
+  const form = new FormData();
+  form.append('file', file);
+  return client.post('/api/excel/recruiters/validate', form).then((r) => r.data);
+};
+export const uploadRecruiterExcel = (file) => {
+  const form = new FormData();
+  form.append('file', file);
+  return client.post('/api/excel/recruiters/upload', form).then((r) => r.data);
 };

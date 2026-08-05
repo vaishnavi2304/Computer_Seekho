@@ -18,7 +18,15 @@ public class Image {
     @Column(name = "image_id")
     private int imageId;
 
-    @Column(name = "image_path")
+    /*
+     * image_path
+     * Was VARCHAR(255) - widened to LONGTEXT so this can hold either a
+     * short hosted image URL (unchanged, existing behaviour) OR a
+     * base64 data: URL from the admin "Browse..." file picker, same
+     * reasoning as Student.photoUrl. A varchar(255) cannot hold even a
+     * small embedded image's base64 text.
+     */
+    @Column(name = "image_path", columnDefinition = "LONGTEXT")
     private String imagePath;
 
     @ManyToOne
